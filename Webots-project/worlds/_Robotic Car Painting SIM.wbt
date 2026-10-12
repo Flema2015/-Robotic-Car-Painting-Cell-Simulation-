@@ -1,0 +1,85 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/vehicles/protos/bmw/BmwX5.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/abb/irb/protos/Irb4600-40.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.3169956453830841 -0.3188430996248765 -0.8932260848350563 4.605479786022039
+  position -0.6271688347908378 -16.592513111427685 13.483700649149995
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 12 8
+}
+Irb4600-40 {
+  hidden position_0_0 -0.005114220774847175
+  hidden rotation_1 0 0 -1 0.005114220774810185
+  hidden position_1_0 -0.007405798125463019
+  hidden rotation_2 0 -1 0 0.007405798125489163
+  hidden position_2_0 0.5150264002957172
+  hidden rotation_3 0 1 0 0.5150264002957174
+  hidden position_3_0 0.10893455281240738
+  hidden rotation_4 1 0 0 0.1089345528124066
+  hidden position_4_0 0.22223069004625365
+  hidden rotation_5 0 1 0 0.22223069004625287
+  hidden position_5_0 -5.33119594778883e-08
+  hidden rotation_6 -1 0 0 5.16191365590357e-08
+  translation -3.28211 0.00064171 0
+  rotation 0 0 1 -0.014265307179586628
+  controller "Painting_car"
+  supervisor TRUE
+  handSlot [
+    Solid {
+      rotation 1 0 0 0.523599
+      children [
+        Shape {
+          appearance PBRAppearance {
+          }
+          geometry Cylinder {
+            height 0.2
+            radius 0.03
+          }
+        }
+      ]
+    }
+  ]
+  staticBase TRUE
+}
+BmwX5 {
+  hidden position_0_0 -3.726582621946806e-08
+  hidden position2_0_0 6.927807897261981e-07
+  hidden position_0_1 -3.57877693114241e-08
+  hidden position2_0_1 1.2523715327586153e-06
+  hidden position_0_2 -0.08051332551985707
+  hidden position_0_3 -0.2094245425510099
+  hidden rotation_1 1.8606013910020136e-08 -0.9985563610179751 0.05371400069384975 6.93824692179136e-07
+  hidden rotation_2 -1.7886583163242826e-08 0.9995919559888916 0.028564340046665665 1.2527614567866353e-06
+  hidden rotation_3 0 0.9999999999999999 0 0.08051332551985696
+  hidden rotation_4 0 -1 0 0.2094245425510109
+  translation -0.0003494080461267017 1.0054462213402153 -0.029385688210265215
+  rotation -0.010906673173572922 -0.01089412870587944 -0.9998811741602223 1.572041894540543
+  controller "<none>"
+}
+Solid {
+  translation -1.7778878146632497 -0.002436854268354032 0.9367983991681726
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0.6 1
+        roughness 1
+        metalness 0
+      }
+      geometry Sphere {
+        radius 0.03
+      }
+    }
+  ]
+}
