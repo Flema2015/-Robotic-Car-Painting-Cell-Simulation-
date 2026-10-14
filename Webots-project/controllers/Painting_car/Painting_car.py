@@ -1,37 +1,42 @@
+"""Paso 1: llevar la brida (flange) del ABB IRB 4600/40 a un punto y verificar el resultado.
+
+La brida es la placa de montaje al final del brazo, donde se atornilla la herramienta.
+Requisito: el robot debe tener el campo supervisor en TRUE (y el mundo guardado).
+"""
+
 import sys
 import tempfile
 import warnings
 import numpy as np
 
 try:
-    from ikpy.chain import Chain 
+    from ikpy.chain import Chain
 except ImportError:
-    sys.exit('there is no module named "ikpy". Install it with "pip install ikpy"')
+    sys.exit('Falta ikpy. Instalalo con: pip install ikpy')
 
 from controller import Supervisor
 
-# ---------------- Parameters ----------------
-# the robot's goal based on the robot's local coordinate system.
-# x = foward, y = To the Left, z = To the top.
+# ---------------- Parametros ----------------
+# Punto objetivo en el sistema de coordenadas de la BASE del robot, en metros:
+# x = hacia adelante, y = hacia la izquierda, z = hacia arriba.
 TARGET_LOCAL = np.array([1.5, 0.0, 1.0])
-SETTLE_TIME_S = 8.0  # constant created to allow the robot to reach the target position before checking the error.
+SETTLE_TIME_S = 8.0  # segundos de simulacion que esperamos a que el brazo llegue
 
 # ---------------- Webots ----------------
 robot = Supervisor()
 time_step = int(robot.getBasicTimeStep())
 arm = robot.getSelf()
 
-# To ensure that the robot supervisor is in TRUE mode, otherwise the robot will not be able to move.
-if arm is None:
-    sys.exit('This robot is NOT a Supervisor. Set the supervisor to TRUE on the robot, '
-             'save the world (Ctrl+S) and reset the simulation (Ctrl+Shift+T).')
+# Si el campo supervisor del robot esta en FALSE, getSelf() igual devuelve un objeto,
+# pero las llamadas que hagamos con el devuelven NaN. Probamos una y cortamos aca
+# con un mensaje claro en vez de dejar que falle mas adelante.
+if not np.all(np.isfinite(np.array(arm.getPosition(), dtype=float))):
+    sys.exit('Este robot NO es Supervisor. Pone supervisor TRUE en el robot, '
+             'guarda el mundo con el boton de guardar de la barra superior y '
+             'recarga el mundo (Reload World).')
 
-    
-if not np.isfinite(arm.getPosition()).all():
-    sys.exit("The robot's supervisor has no valid position. Set the supervisor to TRUE on the robot, "
-             'save the world (Ctrl+S) and reset the simulation (Ctrl+Shift+T).')
-# ----------------  Kinematics (based on ikpy) ----------------
-# Webots generates a URDF description of the robot; ikpy converts it into a mathematical model.
+# ---------------- Cadena cinematica (ikpy) ----------------
+# Webots genera una descripcion URDF del robot; ikpy la convierte en un modelo matematico.
 with tempfile.NamedTemporaryFile(suffix='.urdf', delete=False) as f:
     urdf_path = f.name
     f.write(robot.getUrdf().encode('utf-8'))
@@ -41,7 +46,7 @@ with tempfile.NamedTemporaryFile(suffix='.urdf', delete=False) as f:
 #    asi que silenciamos esos avisos solo en esta carga.
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
-    probe = Chain.from_urdf_file(urdf_path) 
+    probe = Chain.from_urdf_file(urdf_path)
 mask = ['motor' in link.name for link in probe.links]
 # 2) La cargamos de nuevo indicando que eslabones tienen motor (los unicos que ikpy puede mover).
 chain = Chain.from_urdf_file(urdf_path, active_links_mask=mask)
@@ -93,12 +98,10 @@ marker = (
 robot.getRoot().getField('children').importMFNodeFromString(-1, marker)
 
 # ---------------- Cinematica inversa ----------------
-#retorna La lista de posiciones de cada articulación según el objetivo. 
-ik = chain.inverse_kinematics(TARGET_LOCAL, initial_position=current_joints()) 
+ik = chain.inverse_kinematics(TARGET_LOCAL, initial_position=current_joints())
 for motor, i in zip(motors, motor_idx):
     motor.setPosition(ik[i])
-    
-    # print(f"Posicion de motor {motor.getName()}: {ik[i]}")
+
 # Esperamos a que el brazo llegue.
 for _ in range(int(SETTLE_TIME_S * 1000 / time_step)):
     if robot.step(time_step) == -1:
@@ -109,6 +112,20 @@ for _ in range(int(SETTLE_TIME_S * 1000 / time_step)):
 reached = chain.forward_kinematics(current_joints())[:3, 3]
 error_mm = np.linalg.norm(reached - TARGET_LOCAL) * 1000
 print(f'La brida llego a {np.round(reached, 3)} | error = {error_mm:.1f} mm')
+
+# ---------------- Comprobacion contra el mundo real ----------------
+# Si el Solid de la pistola tiene DEF GUN (se escribe en el panel de abajo del arbol),
+# comparamos donde esta DE VERDAD en Webots contra donde calculo ikpy que deberia estar.
+gun = robot.getFromDef('GUN')
+if gun is None:
+    print('(Sin DEF GUN: salteo la comprobacion contra el mundo)')
+else:
+    gun_pos = np.array(gun.getPosition())
+    gun_axes = np.array(gun.getOrientation()).reshape(3, 3)  # columnas = ejes locales en el mundo
+    diff_mm = (gun_pos - target_world) * 1000
+    print(f'Solid de la pistola en el mundo: {np.round(gun_pos, 3)}')
+    print(f'Diferencia contra el objetivo (mm): {np.round(diff_mm, 1)}')
+    print(f'Eje z de la pistola en el mundo: {np.round(gun_axes[:, 2], 3)}')
 
 # El controlador tiene que seguir vivo: si termina, los motores quedan sin orden
 # y el brazo se cae por la gravedad.

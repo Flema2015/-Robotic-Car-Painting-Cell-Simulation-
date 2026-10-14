@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.3169956453830841 -0.3188430996248765 -0.8932260848350563 4.605479786022039
-  position -0.6271688347908378 -16.592513111427685 13.483700649149995
+  orientation 0.25941969048698504 -0.30644102672663553 -0.9158576970940202 4.790980887826838
+  position -2.2279695293904123 -6.434085213655577 4.2700352393260514
 }
 TexturedBackground {
 }
@@ -20,32 +20,46 @@ RectangleArena {
   floorSize 12 8
 }
 Irb4600-40 {
-  hidden position_0_0 -0.005114220774847175
-  hidden rotation_1 0 0 -1 0.005114220774810185
-  hidden position_1_0 -0.007405798125463019
-  hidden rotation_2 0 -1 0 0.007405798125489163
-  hidden position_2_0 0.5150264002957172
-  hidden rotation_3 0 1 0 0.5150264002957174
-  hidden position_3_0 0.10893455281240738
-  hidden rotation_4 1 0 0 0.1089345528124066
-  hidden position_4_0 0.22223069004625365
-  hidden rotation_5 0 1 0 0.22223069004625287
-  hidden position_5_0 -5.33119594778883e-08
-  hidden rotation_6 -1 0 0 5.16191365590357e-08
+  hidden position_0_0 0.027716843156253165
+  hidden rotation_1 0 0 0.9999999999999999 0.027716843156252256
+  hidden position_1_0 0.06961843697847404
+  hidden rotation_2 0 1 0 0.06961843697847424
+  hidden position_2_0 0.45242784342941167
+  hidden rotation_3 0 1 0 0.45242784342941195
+  hidden position_3_0 -0.7334338697343934
+  hidden rotation_4 -1 0 0 0.7334338697343935
+  hidden position_4_0 0.5954557090856535
+  hidden rotation_5 0 1 0 0.5954557090856536
+  hidden position_5_0 -8.584206876435249e-08
+  hidden rotation_6 -1 0 0 8.429369702178807e-08
   translation -3.28211 0.00064171 0
-  rotation 0 0 1 -0.014265307179586628
   controller "Painting_car"
   supervisor TRUE
   handSlot [
-    Solid {
-      rotation 1 0 0 0.523599
+    DEF GUN Solid {
+    }
+    Pose {
+      translation 0 0 0.23
       children [
         Shape {
           appearance PBRAppearance {
+            baseColor 0.9 0.75 0.1
           }
-          geometry Cylinder {
-            height 0.2
-            radius 0.03
+          geometry Box {
+            size 0.02 0.02 0.06
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0 0.1
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.25 0.25 0.25
+          }
+          geometry Box {
+            size 0.05 0.05 0.2
           }
         }
       ]
@@ -54,22 +68,22 @@ Irb4600-40 {
   staticBase TRUE
 }
 BmwX5 {
-  hidden position_0_0 -3.726582621946806e-08
-  hidden position2_0_0 6.927807897261981e-07
-  hidden position_0_1 -3.57877693114241e-08
-  hidden position2_0_1 1.2523715327586153e-06
-  hidden position_0_2 -0.08051332551985707
-  hidden position_0_3 -0.2094245425510099
-  hidden rotation_1 1.8606013910020136e-08 -0.9985563610179751 0.05371400069384975 6.93824692179136e-07
-  hidden rotation_2 -1.7886583163242826e-08 0.9995919559888916 0.028564340046665665 1.2527614567866353e-06
-  hidden rotation_3 0 0.9999999999999999 0 0.08051332551985696
-  hidden rotation_4 0 -1 0 0.2094245425510109
-  translation -0.0003494080461267017 1.0054462213402153 -0.029385688210265215
-  rotation -0.010906673173572922 -0.01089412870587944 -0.9998811741602223 1.572041894540543
+  hidden position_0_0 -3.724280974926434e-08
+  hidden position2_0_0 -2.255553054766631e-07
+  hidden position_0_1 -3.58033199213819e-08
+  hidden position2_0_1 3.340312456066154e-07
+  hidden position_0_2 -0.08346713413022572
+  hidden position_0_3 -0.2123783255875421
+  hidden rotation_1 -1.837263941816115e-08 0.9866408867566208 0.16291028383778788 2.289159818848554e-07
+  hidden rotation_2 -1.779970387358525e-08 0.9943046573709042 0.10657508306601701 3.3585511653377587e-07
+  hidden rotation_3 0 1 0 0.08346713413022318
+  hidden rotation_4 0 -1 0 0.2123783255875426
+  translation -0.00034994959051293023 1.0050254997493562 -0.029551966153317344
+  rotation -0.010938418180032088 -0.010926139047386223 -0.999880478103876 1.5720425879361382
   controller "<none>"
 }
 Solid {
-  translation -1.7778878146632497 -0.002436854268354032 0.9367983991681726
+  translation -1.7821099999999999 0.00064171 1
   children [
     Shape {
       appearance PBRAppearance {
