@@ -39,8 +39,6 @@ See the technical report for the method, measured result, validation notes, and 
 
 The focused controller/model test set contains 17 passing tests, and the Python files compile. A full test discovery currently encounters an import error in the exploratory `test_reach_study.py`: it requests functions not exported by `reach_study.py`, which also starts a lengthy study when imported. That exploratory test was not used as evidence for the painting result.
 
-## Submission details to complete
-
 - **Email:** [hamuiemanuel@gmail.com]
 - **GitHub link:** [https://github.com/Flema2015/-Robotic-Car-Painting-Cell-Simulation-]
 - **Google Drive link:** [https://drive.google.com/drive/folders/1MGfIITwk-NvkDfv1DSJd3E6cSEu3R65R]
