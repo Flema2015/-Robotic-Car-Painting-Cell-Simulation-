@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Robotic Car Painting Cell Simulation - Technical Report</title>
+  <style>
+    @page { size: A4; margin: 17mm 18mm 18mm; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #202a35; font-size: 10pt; line-height: 1.38; }
+    h1 { color: #123b5d; font-size: 25pt; margin: 0 0 5mm; }
+    h2 { color: #155b82; font-size: 15pt; margin: 0 0 3mm; }
+    h3 { color: #174e70; font-size: 11pt; margin: 3mm 0 1mm; }
+    p { margin: 0 0 2.5mm; }
+    ul, ol { margin: 1mm 0 3mm; padding-left: 6mm; }
+    li { margin: 0 0 1.2mm; }
+    table { border-collapse: collapse; width: 100%; margin: 2mm 0 3mm; font-size: 9pt; }
+    th, td { border: 1px solid #9aaab5; padding: 2mm; text-align: left; vertical-align: top; }
+    th { background: #e8f1f6; }
+    .subtitle { color: #536777; font-size: 12pt; margin-bottom: 7mm; }
+    .meta { background: #eef4f7; padding: 4mm; margin: 4mm 0; }
+    .callout { background: #fff5df; border-left: 3px solid #d89516; padding: 3mm; margin: 3mm 0; }
+    .evidence { page-break-before: always; }
+    .figure { margin: 3mm 0; text-align: center; page-break-inside: avoid; }
+    .figure img { width: 100%; max-height: 105mm; object-fit: contain; }
+    .caption { color: #536777; font-size: 8.5pt; margin-top: 1.5mm; }
+    .page { page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+    .small { color: #536777; font-size: 8.5pt; }
+  </style>
+</head>
+<body>
+  <section class="page">
+    <h1>Robotic Car Painting Cell Simulation</h1>
+    <p class="subtitle">Short Technical Report</p>
+    <div class="meta">
+      <strong>Candidate:</strong> Emanuel Hamui<br>
+      <strong>Software:</strong> Webots R2025a, Python, NumPy, IKPy<br>
+      <strong>Robot:</strong> ABB IRB 4600-40<br>
+      <strong>Vehicle:</strong> BMW X5 model<br>
+      <strong>Date:</strong> 22 October 2026<br>
+      <strong>College / email:</strong> To be completed by candidate
+    </div>
+
+    <h2>1. Objective and scope</h2>
+    <p>This project builds a software simulation of a basic automotive painting cell. It demonstrates an industrial manipulator with a spray-gun end-effector, a vehicle model, planned paths over exterior panels, inverse-kinematics-based motion, and conservative robot-to-vehicle clearance checks. The design follows the assessment's emphasis on demonstrating robotics fundamentals rather than delivering a production-ready paint line.</p>
+    <p>The current demonstration focuses on the hood. A successful simulation marker indicates that the nozzle reached a planned waypoint; it does not represent real paint, coating quality, or a fully painted physical surface.</p>
+
+    <h2>2. Software, robot, and cell layout</h2>
+    <p>The scene is implemented in Webots R2025a and uses an ABB IRB 4600-40 model. A BMW X5 model is positioned in a 12 m by 8 m arena. A simple spray-gun tool is attached to the robot hand. The controller runs in Python and uses IKPy for inverse kinematics and NumPy for geometric calculations.</p>
+    <p>The controller's vehicle coordinate frame places the origin at the vehicle center on the floor: x points toward the front, y toward the vehicle's left, and z upward. Candidate robot stations are defined relative to this frame. In the current demonstration, Webots Supervisor repositions the robot base between station poses instantly; this is a simulation convenience, not a modeled mobile base or a physical relocation path.</p>
+
+    <h2 class="evidence">Simulation evidence</h2>
+    <div class="figure">
+      <img src="screenshots/painting_test_capture.png" alt="Webots simulation with robot and blue visual markers over the vehicle hood">
+      <p class="caption">Figure 1. Captured Webots paint-test run. Blue marks are visual indicators of reached spray waypoints; they do not change the vehicle texture.</p>
+    </div>
+    <p><strong>Captured result:</strong> 131 of 154 hood waypoints (85.1%) are covered by the simulated marker footprint. 23 remain uncovered; the console reports 11 point-clearance blocks. These are waypoint diagnostics, not a physical-area measurement.</p>
+    <p class="small">The vehicle reference dimensions are approximately 4.8 m × 1.9 m × 1.6 m. Panel dimensions and pose are estimates calibrated against the scene and scan data; they are not a metrology-grade vehicle model.</p>
+  </section>
+
+  <section class="page">
+    <h2>3. Surface model and trajectory planning</h2>
+    <p>The controller represents the hood, roof, and one side as planar or locally planar rectangular patches in the vehicle frame. The hood incorporates a downward slope; the roof is treated as horizontal. The model was refined using RGB-D range data from a fixed scan rig. The scan tools capture camera images and depth data, then apply color/depth masks to estimate the vehicle surface. This supports geometric calibration, but does not provide a complete CAD reconstruction.</p>
+    <p>For each patch, a raster generator creates alternating zigzag passes. The nozzle is offset from the surface by a nominal 0.25 m standoff and oriented approximately normal to the panel. The current raster uses 0.15 m between passes and 0.08 m between samples along a pass. The hood path contains 154 waypoints in the reported run.</p>
+
+    <h3>Inverse kinematics and motion</h3>
+    <p>IKPy computes joint configurations for each target nozzle pose, using the prior solution as a seed to encourage continuity. The planner applies position and orientation tolerances before considering a target reachable. During the limited paint test, each selected pose is sent to the Webots motors at no more than 0.30 rad/s. The controller checks the actual nozzle pose against the target and skips points that fail to reach safely or within the configured timeout.</p>
+
+    <h3>Simulated paint marks</h3>
+    <p>In <code>paint_test</code> mode, reaching a waypoint adds a blue cylinder-like visual mark with a configured 7.5 cm coverage radius. A surface waypoint is counted as covered when it lies within that radius of a reached mark. This footprint model reduces duplicate passes in later station attempts, but it is only a simplified visual coverage estimate; it does not simulate atomization, spray distribution, or paint deposition.</p>
+
+    <h2>4. Collision checking and safeguards</h2>
+    <p>Robot collision volumes are loaded from supported box colliders in the exported URDF and transformed using forward kinematics. The vehicle is represented by a union of approximate boxes for the lower body, hood, cabin, roof, bumpers, and wheels. A separating-axis clearance calculation checks robot volumes against those boxes. The controller applies a minimum 0.10 m clearance and checks not only target poses but also interpolated joint-space motion, approach, and retreat paths.</p>
+    <div class="callout"><strong>Safety interpretation:</strong> the vehicle boxes are approximate and the clearance calculation is conservative. It is useful as a basic simulation check, not as a certified industrial safety system or a substitute for exact mesh/contact validation.</div>
+    <p>The current paint-test speed is intentionally limited. Webots contact tracking is also enabled, and detected contact causes a stop. No physical paint actuator is activated.</p>
+  </section>
+
+  <section class="page">
+    <h2>5. Demonstration result</h2>
+    <p>The captured run used the hood patch and station sequence 2, 3, 1, and 4. It reports coverage by the simulated marker footprint, not painted area.</p>
+    <table>
+      <thead><tr><th>Measure</th><th>Observed result</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Hood path samples</td><td>154</td><td>Waypoints in the raster trajectory.</td></tr>
+        <tr><td>Covered by simulated footprint</td><td>131 / 154 (85.1%)</td><td>Waypoints within 7.5 cm of a reached visual mark.</td></tr>
+        <tr><td>Remaining uncovered</td><td>23 / 154 (14.9%)</td><td>Points not covered by the simulated footprint at the end of the run.</td></tr>
+        <tr><td>Point-clearance diagnostic</td><td>11 points</td><td>Reported as blocked by the 10 cm margin; diagnostic categories can overlap.</td></tr>
+      </tbody>
+    </table>
+    <p>This is a partial demonstration rather than complete hood coverage. IK and collision filters may reject targets; the motion is also deliberately conservative. The roof and side are represented in the model but are not validated by this captured run. The result should not be described as a fully painted vehicle.</p>
+
+    <h2>6. Validation</h2>
+    <p>Focused automated tests for the cell model and collision checker passed (17 tests). They cover patch geometry, station transforms, footprint coverage, IK candidate selection, and clearance behavior. Python bytecode compilation also succeeded. A repository-wide test discovery is not fully clean: the exploratory <code>test_reach_study.py</code> tries to import functions that are not exported by <code>reach_study.py</code>, and that module starts a lengthy reach study on import. This issue is separate from the focused controller and collision tests.</p>
+    <p>The Webots console and screenshot provide evidence for the described hood run. No independent repeatability study, quantitative area measurement, paint-quality analysis, or physical deployment test was performed.</p>
+
+    <h2>7. Limitations and next steps</h2>
+    <ul>
+      <li>Coverage is waypoint/footprint-based and does not measure actual painted area.</li>
+      <li>Paint marks are visual objects; vehicle texture and physical paint behavior remain unchanged.</li>
+      <li>Collision volumes approximate the vehicle mesh and may both reject safe poses and fail to represent some detailed geometry.</li>
+      <li>The base is teleported between stations; station-to-station travel is not simulated.</li>
+      <li>The reported hood result leaves 23 waypoints uncovered. The roof and side need separate end-to-end runs before any coverage claim is made.</li>
+    </ul>
+    <p><strong>Conclusion:</strong> the project demonstrates a Webots automotive cell, raster trajectory planning, IK-driven robot motion, basic collision-clearance checks, and visual evidence of partial hood coverage. It is an educational prototype and is not represented as a complete industrial painting solution.</p>
+  </section>
+</body>
+</html>

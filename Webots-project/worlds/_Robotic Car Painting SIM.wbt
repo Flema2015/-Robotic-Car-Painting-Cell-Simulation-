@@ -9,8 +9,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.25941969048698504 -0.30644102672663553 -0.9158576970940202 4.790980887826838
-  position -2.2279695293904123 -6.434085213655577 4.2700352393260514
+  orientation 0.32239029331440855 -0.34780655210432826 -0.8803948552155157 4.660901726090107
+  position -1.7949588665795846 -10.611562534063344 9.20913691472346
 }
 TexturedBackground {
 }
@@ -20,18 +20,17 @@ RectangleArena {
   floorSize 12 8
 }
 Irb4600-40 {
-  hidden position_0_0 0.027716843156253165
-  hidden rotation_1 0 0 0.9999999999999999 0.027716843156252256
-  hidden position_1_0 0.06961843697847404
-  hidden rotation_2 0 1 0 0.06961843697847424
-  hidden position_2_0 0.45242784342941167
-  hidden rotation_3 0 1 0 0.45242784342941195
-  hidden position_3_0 -0.7334338697343934
-  hidden rotation_4 -1 0 0 0.7334338697343935
-  hidden position_4_0 0.5954557090856535
-  hidden rotation_5 0 1 0 0.5954557090856536
-  hidden position_5_0 -8.584206876435249e-08
-  hidden rotation_6 -1 0 0 8.429369702178807e-08
+  hidden position_0_0 -0.0013542471027120989
+  hidden rotation_1 0 0 -1 0.0013542471026944136
+  hidden position_1_0 7.018521095677674e-05
+  hidden rotation_2 0 1 0 7.018520953518637e-05
+  hidden position_2_0 9.927040876789924e-06
+  hidden rotation_3 0 1 0 9.927036828842246e-06
+  hidden position_3_0 -0.0002390497073958061
+  hidden rotation_4 -1 0 0 0.00023904970773379097
+  hidden position_4_0 1.1957068527089408e-07
+  hidden rotation_5 0 1 0 1.1920928955078128e-07
+  hidden position_5_0 5.586304771004943e-09
   translation -3.28211 0.00064171 0
   controller "Painting_car"
   supervisor TRUE
@@ -39,7 +38,7 @@ Irb4600-40 {
     DEF GUN Solid {
     }
     Pose {
-      translation 0 0 0.23
+      translation 0 0 0.18
       children [
         Shape {
           appearance PBRAppearance {
@@ -52,7 +51,7 @@ Irb4600-40 {
       ]
     }
     Pose {
-      translation 0 0 0.1
+      translation 0 0 0.05
       children [
         Shape {
           appearance PBRAppearance {
@@ -67,19 +66,21 @@ Irb4600-40 {
   ]
   staticBase TRUE
 }
-BmwX5 {
-  hidden position_0_0 -3.724280974926434e-08
-  hidden position2_0_0 -2.255553054766631e-07
-  hidden position_0_1 -3.58033199213819e-08
-  hidden position2_0_1 3.340312456066154e-07
-  hidden position_0_2 -0.08346713413022572
-  hidden position_0_3 -0.2123783255875421
-  hidden rotation_1 -1.837263941816115e-08 0.9866408867566208 0.16291028383778788 2.289159818848554e-07
-  hidden rotation_2 -1.779970387358525e-08 0.9943046573709042 0.10657508306601701 3.3585511653377587e-07
-  hidden rotation_3 0 1 0 0.08346713413022318
-  hidden rotation_4 0 -1 0 0.2123783255875426
-  translation -0.00034994959051293023 1.0050254997493562 -0.029551966153317344
-  rotation -0.010938418180032088 -0.010926139047386223 -0.999880478103876 1.5720425879361382
+DEF CAR BmwX5 {
+  hidden position_0_0 3.807984261711181e-11
+  hidden position2_0_0 -3.502834942767254e-05
+  hidden position_0_1 -2.6485107600461696e-11
+  hidden position2_0_1 -3.502838755294287e-05
+  hidden position_0_2 -0.0033515700576465884
+  hidden position_0_3 -0.003351571955794139
+  hidden linearVelocity_0 -3.9583190055607196e-08 -3.616361694120574e-05 -0.0034408543997754637
+  hidden angularVelocity_0 -0.00024321605884232496 2.7741503535600784e-07 -8.510583806453949e-11
+  hidden rotation_1 1.9039921308544652e-11 0.9999999999994089 -1.0871149578950033e-06 3.502835457519463e-05
+  hidden rotation_2 1.3242553800227061e-11 -0.999999999999714 7.561041043558093e-07 3.50283926091509e-05
+  hidden rotation_3 0 1 0 0.003351570057616478
+  hidden rotation_4 0 -1 0 0.003351571955838233
+  translation -0.0003506237225314301 1.004424935633212 -0.02874010277052258
+  rotation -0.010870865529533869 -0.010858664210891817 -0.9998819498791814 1.572041116418256
   controller "<none>"
 }
 Solid {
@@ -96,4 +97,115 @@ Solid {
       }
     }
   ]
+}
+Robot {
+  children [
+    RangeFinder {
+      translation -0.002 -0.395 6
+      rotation 0 1 0 1.5708
+      name "rf_top"
+      fieldOfView 1.309
+      width 320
+      height 240
+      near 0.1
+      minRange 0.1
+      maxRange 10
+    }
+    Camera {
+      translation -0.002 -0.395 6
+      rotation 0 1 0 1.5708
+      name "cam_top"
+      fieldOfView 1.309
+      width 320
+      height 240
+      near 0.1
+      far 10
+    }
+    RangeFinder {
+      translation 3.0 -0.395 1.5
+      rotation -0.090476903 0 0.995898554 3.141592654
+      name "rf_side_px"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      minRange 0.1
+      maxRange 10
+    }
+    Camera {
+      translation 3.0 -0.395 1.5
+      rotation -0.090476903 0 0.995898554 3.141592654
+      name "cam_side_px"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      far 10
+    }
+    RangeFinder {
+      translation -3.0 -0.395 1.5
+      rotation 0 1 0 0.181438099
+      name "rf_side_nx"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      minRange 0.1
+      maxRange 10
+    }
+    Camera {
+      translation -3.0 -0.395 1.5
+      rotation 0 1 0 0.181438099
+      name "cam_side_nx"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      far 10
+    }
+    RangeFinder {
+      translation -0.002 3.4 1.45
+      rotation 0 0.130623459 -0.991432051 1.570796327
+      name "rf_end_py"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      minRange 0.1
+      maxRange 10
+    }
+    Camera {
+      translation -0.002 3.4 1.45
+      rotation 0 0.130623459 -0.991432051 1.570796327
+      name "cam_end_py"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      far 10
+    }
+    RangeFinder {
+      translation -0.002 -4.2 1.45
+      rotation 0 0.130285999 0.991476454 1.570796327
+      name "rf_end_ny"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      minRange 0.1
+      maxRange 10
+    }
+    Camera {
+      translation -0.002 -4.2 1.45
+      rotation 0 0.130285999 0.991476454 1.570796327
+      name "cam_end_ny"
+      fieldOfView 1.745329
+      width 320
+      height 240
+      near 0.1
+      far 10
+    }
+  ]
+  name "Fixed scan rig"
+  controller "scan_rig"
 }
